@@ -1,2 +1,2 @@
 # UofW-Predictive-Analytics
-Projects and assignments in school
+# All University of Winnipeg projects and assignments.

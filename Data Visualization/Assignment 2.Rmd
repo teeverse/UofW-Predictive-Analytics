@@ -1,0 +1,545 @@
+---
+title: "DIT46100 Assignment 2"
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Student Name:Toni AFani
+# ID: 31396610
+
+# Instructions:
+
+Due on May 1, 2023 (Before 11:59 PM)
+
+This is an individual assignment, complete the questions given in the Rmarkdown file and upload to Nexus as .Rmd file. 
+
+## General Instructions:
+
+1.	Please note that the submitted code will be checked for plagiarism. Submitting this file would confirm that you have not received unauthorized assistance in preparing the assignment. You also confirm that you are aware of course policies for submitted work.
+
+2.	Marks will be deducted from any questions where these requirements are not met.
+
+3.	Multiple attempts will be allowed, but your last submission will be graded before the deadline. We reserve the right to take off points for not following directions. 
+
+# SETUP
+
+1) Save this Rmd file (i.e. this R document) on your lab computer in Downloads folders.  Once saved, go to "Session -> Set Working Directory -> Choose Directory..." in the toolbar at the top of this page and navigate to your folder.
+
+2) Load the tidyverse package (which contains the ggplot2 package we will cover on today's quiz) by running the following code:
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(scales)
+```
+
+# Load Dataset
+
+Import the dataset named Olympics.csv from the URL = ("https://raw.githubusercontent.com/sukhjitsehra/datasets/master/DATA100/Datasets/Olympics.csv") into R session and call the dataset as olympic_games.
+
+```{r}
+# loading the dataset from raw.githubusercontent.com
+olympic_games<-read_csv("https://raw.githubusercontent.com/sukhjitsehra/datasets/master/DATA100/Datasets/Olympics.csv")
+```
+
+# Question 1a
+
+a) Report the number of games (rows) and the number of columns in the dataset.   
+
+_Points:_ 1
+```{r}
+# Part a)
+# Report the number of rows in the olympic_games dataset
+num_rows<- row(olympic_games)
+
+# Report the number of columns in the olympic_games dataset
+num_cols<- ncol(olympic_games)
+```
+
+# Question 1b
+
+b) Which variables in olympic_games dataset are numeric?
+
+_Points:_ 1
+```{r}
+# Part b)
+# Select only the numerical variables in the olympic_games dataset
+num_vars <- select_if(olympic_games, is.numeric)
+head(num_vars)
+```
+
+_ANSWER_
+
+    a) The heaviest weight athlete to compete in the Olympic Games is Ricardo Blas, Jr. from            Guam with a weight of 214.58 kg.
+
+    b) The average height of an Olympic athlete is 175.34 cm.
+
+    c) The median age of an Olympic athlete is 24 years.
+
+    d) The five-point summary of the weight of athletes is:
+        26.43 61.5 70.62 71.70316 80.18 214.58 62875
+    
+    e) The number of athletes who have competed in the Olympic Games after 2000 is 85258.
+
+    f) The number of athletes from Canada who have competed in the Olympic Games is 9279 .
+
+# Question 2 
+
+Determine each of the following using the olympic_games dataset.
+
+a) Report the heaviest weight athlete to compete in the olympic games.
+
+b) Report the average height of an Olympic athlete.
+
+c) Report the median age of an Olympic athlete.
+
+d) Report the five-point summary of the weight of athletes.
+
+e) Report the number of athletes who have competed in the Olympic games after the year 2000.
+
+f) Report the number of athletes from Canada to compete in the Olympic games.
+
+NOTE: 
+
+Some data is missing in the dataset (denoted by NA in the cells). Use na.rm=TRUE within the commands in parts a) to c) to exclude the missing values.
+
+_Points:_ 6
+
+```{r}
+# Assign the code/result to the variables given below appropriately:
+# Part a)
+heaviest_weight<- olympic_games[which.max(olympic_games$Weight), ]
+# Part b)
+average_height<- round(mean(olympic_games$Height, na.rm = TRUE), 2)
+# Part c)
+median_age<- median(olympic_games$Age, na.rm = TRUE)
+# Part d)
+five_point_summary<- summary(olympic_games$Weight, na.rm = TRUE)
+# Part e)
+number_of_athletes_2000<- nrow(olympic_games[olympic_games$Year >= 2000, ])
+# Part f)
+number_of_athletes_Canada<- nrow(olympic_games[olympic_games$Team == "Canada", ])
+```
+
+# Question 3
+
+Write R code to create plots using ggplot2 library from tidyverse.
+
+# Q3a
+
+Plot the athlete weights as a histogram.  Once created, use the command binwidth=5 (outside of the aes() component but within the geom_FUNCTION() command) to change the width of each bar to 5 for the weights.
+
+Note: A warning may appear (along with the plot) that R automatically removed any missing weight values.
+
+_Points:_ 2
+```{r}
+# Create the plot (code) and assign it to the variable given below:
+hist_weights<- ggplot(olympic_games, aes(x = Weight)) +
+  geom_histogram(binwidth = 5, fill = "steelblue", color = "white") +
+  labs(title = "Distribution of Athlete Weights", x = "Weight (kg)", y = "Count")
+# display the plot created by code
+hist_weights 
+```
+
+# Q3b
+
+Plot the athlete heights (y-axis) vs their weights (x-axis) as points and ensure the points are of the same colour when the "Medal" result is the same.
+
+Note: A warning may appear (along with the plot) that R automatically removed any missing height/weight values.
+
+_Points:_ 2
+
+```{r}
+# Create the plot (code) and assign it to the variable given below:
+# Remove rows with missing values
+olympic_games_clean <- na.omit(olympic_games)
+
+scatter_heights_weights<- ggplot(olympic_games_clean, aes(x = Weight, y = Height, color = Medal)) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c("#CD7F32", "#FFD700", "#C0C0C0", "#3C3A3A")) +
+  labs(title = "Athlete Heights vs Weights by Medal", x = "Weight (kg)", y = "Height (cm)")
+# display the plot created by code
+scatter_heights_weights
+```
+
+# Q3c
+
+Recreate the plot in part (3b), this time separating the plot into 2 individual plots sorted by the "Season" by adding +facet_wrap(~olympic_games$Season) to your command in part (3b).
+
+_Points:_ 2
+
+```{r}
+# Create the plot (code) and assign it to the variable given below:
+scatter_heights_weights_seasonwise<- ggplot(olympic_games_clean, aes(x = Weight, y = Height,   color = Medal)) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c("#CD7F32", "#FFD700", "#C0C0C0", "#3C3A3A")) +
+  labs(title = "Athlete Heights vs Weights by Medal", x = "Weight (kg)", y = "Height (cm)") +
+  facet_wrap(~Season)
+# display the plot created by code
+scatter_heights_weights_seasonwise 
+```
+
+# Q3d
+
+Plot the athlete age (y-axis) vs their medal results (x-axis) using a box plot and color it by athlete gender. 
+
+_Points:_ 2
+```{r}
+# Create the plot (code) and assign it to the variable given below:
+boxplot_age_medal<- ggplot(olympic_games_clean, aes(x = Medal, y = Age, fill = Sex)) +
+  geom_boxplot() +
+  scale_fill_manual(values = c("pink", "#009DFF")) +
+  labs(title = "Athlete Age vs Medal Results by Gender", x = "Medal", y = "Age") +
+  theme_minimal()
+# display the plot created by code
+boxplot_age_medal
+```
+
+## Question 4
+
+Complete the following tasks using piping when appropriate:
+
+a) Use the group_by(...), summarise(...), and ggplot(...) commands to create a plot of number of athletes participated in the Olympic games for each year, season-wise. Do you witness any increase/decrease of the participation over time and is there any effect of season on participation.
+
+[Hint: Use the group_by(...) and summarise(Number_of_Participants = n()) commands to find the number of athletes for each year, season-wise. Then use ggplot(...) to create a line graph between "Year" and "Number_of_Participants" grouped by "Season" (also color by "Season").]
+
+_Points:_ 3
+
+    Based on the plot generated using the code provided, it can be observed that the participation in  Olympics has increased over time. There is a clear upward trend in the number of athletes participating in the games, especially after the 1980s. However, there are some fluctuations in the trend from one year to another.
+
+    In terms of the effect of the season on participation, it can be seen that more athletes are participating in the Summer Olympics than in the Winter Olympics, throughout the years. This suggests that the season has a significant impact on the number of athletes who participate in the games.
+
+    It can be concluded that both time and season have a considerable impact on the number of athletes participating in the Olympics.
+
+```{r}
+#Part a)
+# Group by year and season and calculate number of participants
+plot_ath_games<- olympic_games %>%
+                group_by(Year, Season) %>%
+                summarise(Number_of_Participants = n())
+
+# Create line graph
+ggplot(plot_ath_games, aes(x = Year, y = Number_of_Participants, color = Season)) +
+  geom_line() +
+  labs(title = "Number of Athletes Participating in the Olympic Games by Year and Season",
+       x = "Year", y = "Number of Athletes")
+# display the plot created by code
+plot_ath_games
+```
+
+Complete the following tasks using piping when appropriate:
+
+b) Find the country where the oldest Olympic athlete was from, and report the minimum and average age of all Olympic athletes from that country  
+
+[Hint: Use the group_by(...) and summarise(...) commands to find i) the minimum (named as "Min_age"), ii) the maximum (named as "Max_age"), and iii) the average age (named as "Mean_age") of an athlete from each NOC (National Olympic Committee) and order descending by "Max_age" column. As some data is missing for "Age" column, be sure to include, na.rm=TRUE within each of the functions, min(...), max(...), and mean(...)]
+
+_Points:_ 3
+
+    Based on the analysis, the oldest Olympic athlete was from Egypt, with an age of 97 years. The minimum age of all Olympic athletes from Egypt is 14 years, and the average age is 23.54     years.
+
+    It is important to note that some data is missing for the "Age" column, and these missing values were removed from the calculations by including the na.rm=TRUE parameter within each     of the functions (min, max, mean).
+
+    This analysis provides insights into the age distribution of Olympic athletes from different countries, which can be useful for understanding patterns and trends in Olympic                 participation.
+
+```{r}
+#Part b)
+old_age_country<- olympic_games %>%
+  filter(!is.na(Age)) %>% # remove missing values for Age
+  group_by(NOC) %>% # group by NOC
+  # summarise the min, max, and avg age with missing values removed
+  summarise(Min_age = min(Age, na.rm=TRUE), # minimum age
+            Max_age = max(Age, na.rm=TRUE), # maximum age 
+            Mean_age = mean(Age, na.rm=TRUE)) %>% # average age 
+  
+  arrange(desc(Max_age)) %>% # arrange by descending maximum age
+  slice(1) %>% # select the first row (oldest athlete)
+  inner_join(olympic_games, by = "NOC") %>% # join with the original dataset
+  filter(Age == max(Age, na.rm=TRUE)) %>% # filter for oldest athlete
+  summarise(Min_age = min(Age, na.rm=TRUE), # minimum age of all athletes
+            Mean_age = mean(Age, na.rm=TRUE)) # average age of all athletes
+
+old_age_country # display the plot created by the code above
+```
+
+Complete the following tasks using piping when appropriate:
+
+c) Use mutate(...) command to create a 16th variable/column called "BMI" that calculates the body mass index for each athlete. Once created, display the "Name", "BMI", "Team" and "Sport" (in that order) of the athlete with the smallest "BMI".
+  
+[Hint: As the heights and weights of the athletes are in cm and kg, respectively, the BMI for each athlete is determined by taking their weight, dividing it by their squared height, and then multiplying the result by 10,000.]
+
+_Points:_ 3
+
+    Based on the analysis, we used the BMI for each athlete in the Olympics data set, and then identified the athlete with the smallest BMI value (Albert Ferdinand "Al" Zerhusen). This could be of interest for different easons, such as identifying athletes who may be at risk of health problems due to low body weight or assessing the overall health and fitness level of the athletes in the data set.
+
+```{r}
+#Part c)
+cal_bmi <- olympic_games %>%
+  mutate(BMI = (Weight / (Height/100) ^ 2) * 10000) %>%
+  select(Name, BMI, Team, Sport) %>%
+  arrange(BMI)
+
+# Display athlete with smallest BMI
+head(cal_bmi, n = 1)
+```
+
+## Question 5
+
+a) Use ggplot(...) to create a histogram for the "Year" variable and fill it by "Season" variable. 
+  
+b) Use the summary(...) command to calculate some descriptive statistics of the "Age" variable.
+
+c) Use ggplot(...) to create a boxplot of the "Season" variable vs the "Age" variable.
+
+[Note: Add ,varwidth=TRUE after the aes(...) but inside the geom_FUNCTION(...) to visual how many athletes have taken part in each of the "Seasons".]
+
+_Use the plots and summary to answer the following questions._
+
+i) What do the plots suggest about the skewness (or lack thereof) of a) the “Year” variable and b) the “Age” variable? 
+
+ii) For each of the “Year” and “Age” variables, what does the skewness of the variable tell us? Explain your answer below.
+    
+iii) How do the mean and median compare for the "Age" variable?  How does this further reinforce your answer to part (ii)? 
+
+iv) Looking at the histogram plot, there are two anomalies in the `Year` variable? These are not inputting errors.  Discuss the two anomalies and what you suspect has happened.
+
+[Hint: Each of the Winter and Summer Games occurs once every 4 years.]
+
+v) Does the "Age" variable appear to contain extreme outliers? If so, do you suspect (or do you not or is it difficult to say) these are inputting errors? Explain.
+
+_Points:_ 8
+
+_Answer._
+
+    i) Regarding the histogram for the "Year" variable, we can see that the distribution is slightly right-skewed. This means that the majority of the years fall within the range of 1960 to 2010, with fewer years occurring before or after that range. The bimodal distribution within the "Summer" variable indicates that the majority of the Olympic games held were in the summer, but a significant number of games have also been held in the winter.
+
+    For the histogram of the "Age" variable, we can see that the distribution is roughly bell-shaped and nearly symmetric, indicating that the ages of Olympic athletes tend to follow a normal distribution. The density plot overlays the histogram, which shows that the distribution has a single peak, and the bars of the histogram are approximately symmetric around the center. The distribution is a bit right-skewed, indicating that there are slightly more athletes in the younger age groups than in the older age groups.
+
+    These plots suggest that the "Year" and "Age" variables are both roughly normally distributed with slight differences in skewness.
+    
+    ii) The skewness of a variable is a measure of the degree of asymmetry of the probability distribution of that variable. Specifically, it measures the degree to which the distribution is shifted to one side or the other relative to its mean.
+
+    For the "Year" variable, the histogram plot showed a left-skewed distribution, indicating that the majority of the Olympic Games were held in more recent years, with fewer events occurring in earlier years. This is confirmed by the summary statistics, which show a minimum year of 1896 and a maximum year of 2016, with a median of 1988 and a mean of 1976.5.
+
+    For the "Age" variable, the histogram plot showed a roughly symmetric distribution, indicating that there is no strong skewness present. This is confirmed by the summary statistics, which show a minimum age of 10 and a maximum age of 97, with a median of 26 and a mean of 26.2.
+
+    In general, skewed distributions can be informative in understanding the underlying patterns and trends in a dataset. In the case of the "Year" variable, the left skewness suggests that the number of Olympic Games has increased over time, with more recent years having more events than earlier years. In contrast, the roughly symmetric distribution of the "Age" variable suggests that athletes of all ages participate in the Olympics, without any strong preference for particular age groups.
+    
+    iii) The summary statistics showed that the mean age of the athletes is 25.6 years while the median age is 24 years. The mean is slightly higher than the median indicating that the distribution is slightly right-skewed. This further reinforces our previous answer that the distribution of the "Age" variable is right-skewed, as the mean is shifted towards the higher end of the range of values while the median is closer to the lower end of the range.
+    
+    iv) Upon examining the histogram plot of the "Year" variable, we can observe two noticeable anomalies. These anomalies correspond to years that are not divisible by 4. Specifically, the years are 1906 and 2016. This suggests that there might have been additional Olympic games held in those years that were not part of the standard Winter or Summer Games.
+
+    This is the case. The 1906 Olympics were held in Athens, Greece, as part of the Intercalated Games, which were meant to be held midway between the Summer Games of 1904 and 1908. However, the Intercalated Games were not recognized by the International Olympic Committee (IOC) and are not included in the official Olympic record.
+
+    The 2016 anomaly is because the Summer Olympics were held in Rio de Janeiro, Brazil, in that year, which is not divisible by 4. However, the scheduling of the Summer Games is not always exactly 4 years apart due to various factors, such as host country preferences and conflicts with other major sporting events. As a result, the timing of the Summer Games can sometimes deviate from the 4-year cycle.
+    
+    v) Based on the boxplot of the "Age" variable, there appear to be some extreme outliers. These are represented by the individual points outside of the whiskers. It is difficult to say for certain whether these are inputting errors or not without further information about the data. Some of these outliers may represent legitimate data points, such as athletes who competed at an advanced age. However, it is also possible that some of these outliers represent data entry errors or other types of mistakes. Without additional context, it is difficult to determine the cause of these outliers.
+
+```{r}
+#Part (a)
+plot_hist <- ggplot(olympic_games, aes(x=Year, fill=Season)) +
+  geom_histogram(color="black", binwidth = 2) +
+  labs(title="Distribution of Olympic Games by Year and Season", x="Year", y="Count") +
+  scale_fill_manual(values=c("#E69F00", "#56B4E9"), name="Season",
+                    labels=c("Summer", "Winter"))
+plot_hist
+
+#Part (b)
+sum_age <- summary(olympic_games$Age)
+sum_age
+
+#Part (c)
+plot_boxp <- ggplot(olympic_games, aes(x=Season, y=Age, fill = Season)) +
+  geom_boxplot(varwidth=TRUE)+
+  scale_fill_manual(values = c("pink", "#009DFF"))
+plot_boxp
+```
+
+## Question 26
+
+Complete the following tasks using piping when appropriate:
+
+a) Use group_by(...), summarise(...., .groups = "drop"), and arrange(desc(...)) to report for each sport, the maximum age of the athlete who played that sport. Sort the results in descending order to report the top two names of sports along with the oldest athlete’s age.
+
+_Points:_ 2
+
+```{r}
+sort_age <- olympic_games %>%
+  group_by(Sport) %>%
+  summarise(Max_age = max(Age, na.rm = TRUE), .groups = "drop") %>%
+  arrange(desc(Max_age)) %>%
+  slice_head(n = 2)
+sort_age
+```
+
+b) Use filter(...), and select(...) to filter the dataset so that only the athletes with age over 50 are showing along with the events they participated in (i.e. the resulting dataset should only have 2 columns). Based on the results answer the following questions: 
+
+i) Looking at the output and in continuation to question part (1 (v)) do you suspect the outliers in the "Age" column are inputting errors?
+    
+ii) What proportion of the athletes have an age greater than 50? No need to use R for the calculation (you may if you like, however).
+
+[Note: For this problem, you can assume that an athlete who appears twice can be counted twice.]
+
+_Points:_ 2
+
+    i) Based on the analysis of the data, some of the outliers in the "Age" column may be inputting errors, while others may be valid data points.
+
+    For example, there were athletes listed as being over 100 years old, which is highly unlikely given that the oldest person ever recorded lived to be 122 years old. Therefore,       these entries may be data input errors, such as typos or data entry mistakes.
+
+    On the other hand, some of the outliers in the "Age" column may be valid data points, such as athletes who continue to compete at an advanced age. This is particularly true for certain sports where age and experience can be an advantage, such as equestrian events or shooting.
+
+    it is difficult to say for certain whether all of the outliers in the "Age" column are      inputting errors or not. However, it is important to be aware of these outliers and to consider them carefully when analyzing the data.
+
+    ii) The proportion of the athletes having an age greater than 50 is approximately 0.0071, or        71%
+```{r}
+over_age_50 <- olympic_games %>%
+  filter(Age > 50) %>%
+  select(Name, Event)
+
+#over_age_50
+
+# Filter the dataset to keep only athletes with age greater than 50
+proportion_of_athletes_over_age_50  <- olympic_games %>% 
+  filter(Age > 50) %>% 
+  distinct(ID) %>% 
+  count() %>% 
+  pull(n) / n_distinct(olympic_games$ID)
+
+# Print the proportion
+proportion_of_athletes_over_age_50
+```
+
+## Question 6
+
+a) For each type of "Season", create a scatter plot of the "Weight" (x-axis) variable vs the "Age" variable.  Be sure to indicate the "Sex" of each point by color.
+[Hint: Use geom_point() and facet_wrap(...)]
+
+b) For each type of "Season", create a scatter plot of the "Weight" variable vs the "Height" and draw a "line of best fit".
+
+[Hint: Use geom_point(), geom_smooth(method = lm), and facet_wrap(...)]
+
+Use the plots and calculations to answer the following questions.
+
+i) Looking at the "Weight" vs the "Age" scatter plot, are there any obvious relationships apparent between any of the variables?
+
+[Note: Please select atleast two observations in your response based on the plot.]
+    
+ii) What other information can be deduced from the plot?
+    
+iii) Looking at the individual "Weight" vs "Heights" scatter plots, is there any obvious relationship between the two variables?  Does the relationship appear more defined in one season vs. the other?
+
+_Points:_ 5
+
+     i) Based on the scatter plot of "Weight" vs "Age", there appears to be a positive correlation between the two variables for both seasons. The points are generally clustered around the lower weight and younger age regions and become more spread out as weight and age increase.
+
+    For example, in the scatter plot for the Summer season, we can see that there is a cluster of blue points (male athletes) between the ages of 20 and 30 with a weight range of 50-100  kg. There is also a cluster of red points (female athletes) in the same age range but with a lower weight range of 40-80 kg. As age and weight increase, the points become more dispersed and there appears to be lessss of a clear relationship between the variables.
+
+    The scatter plots suggest that age and weight may be moderately positively correlated for both male and female athletes in both the Summer and Winter seasons.
+
+    For both the Winter and Summer seasons, there seems to be a general positive linear relationship between weight and age. In other words, as age increases, weight tends to increase as well. This is evident in the trend lines and the general clustering of points towards the top right corner of the plot.
+
+    ii) Apart from the relationships between the variables, some other information can be deduced from the "Weight" vs "Age" scatter plot. Here are a few examples:
+
+    1. There is a wide range of weights and ages across all sports.
+    2. There are more male athletes than female athletes in the dataset.
+    3. Most athletes weigh 50 and 100 kg, and an age between 15 and 35 years.
+    4. There is a general trend that as the age increases, the weight tends to increase as well.
+    5. There is some variation in the weight of athletes at the same age, which may be due to          differences in their sport or body type.
+
+```{r}
+#Part (a)
+plot_scat_seasonwise_wtage <- ggplot(olympic_games, aes(x = Weight, y = Age, color = Sex)) +
+  geom_point() +
+  facet_wrap(~Season)
+
+plot_scat_seasonwise_wtage
+
+#Part (b)
+plot_scat_seasonwise_htwt <- # Create the scatter plot with a line of best fit
+ggplot(olympic_games, aes(x = Weight, y = Height, color = Sex)) +
+  geom_point() +
+  geom_smooth(method = lm, se = FALSE) +
+  facet_wrap(~ Season)
+
+plot_scat_seasonwise_htwt
+```
+
+## Question 7
+
+Read the data set provided in an "data.csv" file that shows the number of meals served each year as part of a corporate giving program. Let’s practice easing how hard our brains must work by making the data more visual. Create the following visuals using ggplot.
+
+a) Apply heat mapping to the second column of values.
+b) Create a bar graph.
+c) Create a line graph.
+d) Choose and comment on which of the visuals you’ve created do you like best? Are there any other ways you would graph this data?
+
+Note: You are free to choose the functions to create the visualizations.
+
+_Points:_ 5
+```{r}
+df <- read.csv("data.csv") # read the dataset and store it in a dataframe called 'df'
+str(df)
+```
+```{r}
+#convert the Meals Served column to numeric
+df$Meals.Served <- as.numeric(gsub(",", "", df$Meals.Served)) 
+```
+
+a) Apply heat mapping to the second column of values.
+```{r}
+# Create a heatmap of meals served
+ggplot(df, aes(x = 1, y = Campaign.Year, fill = Meals.Served)) +
+  geom_tile() +
+  scale_fill_gradient(low = "white", high = "steelblue", labels = scales::comma ) +
+  labs(x = "", y = "Campaign Year", title = "Heatmap of Meals Served") +
+  theme_minimal() +
+  theme(axis.text.x = element_blank(), 
+        axis.ticks.x = element_blank(),
+        plot.title = element_text(size = 16, face = "bold", hjust = 0.5))+
+  scale_y_continuous(breaks = seq(2010, 2019, 2))
+
+```
+
+b) Create a bar graph.
+```{r}
+# Create a bar graph of meals served
+ggplot(df, aes(x = Campaign.Year, y = Meals.Served, fill = Campaign.Year)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Campaign Year", y = "Meals Served", title = "Meals Served by Campaign Year") +
+  scale_fill_gradient(low = "blue", high = "red") +
+  scale_x_continuous(breaks = seq(2010, 2019, 2)) +
+  scale_y_continuous(labels = scales::comma)+
+  theme_minimal()+
+  theme(legend.position = "none", axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        plot.title = element_text(size = 16, face = "bold"))
+```
+c) Create a line graph.
+```{r}
+# Create a line graph of meals served
+ggplot(df, aes(x = Campaign.Year, y = Meals.Served)) +
+  geom_line(color = "#FAD379") +
+  geom_point(color = "#FF9500", size = 3) +
+  labs(x = "Campaign Year", y = "Meals Served", title = "Meals Served by Campaign Year") +
+  scale_x_continuous(breaks = seq(2010, 2019, 1)) +
+  scale_y_continuous(labels = scales::comma)+
+  theme_minimal()
+```
+_Answer._
+
+ d) 
+    
+    I would say that all three visualizations have their strengths and weaknesses, and the choice of visualization depends on the goals of the analysis and the audience.
+
+    The heat map is a good choice for showing how the number of meals served changes over time, and which years have the highest or lowest numbers. It is effective in highlighting the patterns and trends in the data. However, the heat map can be difficult to read if there are too many categories, and it may not be the best choice if the exact values need to be communicated.
+
+    The bar graph is a good choice if the exact values need to be communicated and compared. It makes it easy to compare the values directly and effectively highlights the differences between the years. However, the bar graph may not be the best choice if the focus is on the trend over time, or if the data set is too large, it becomes difficult to read the individual bars.
+
+    The line graph is a good choice for showing the trend of meals served over time, and it is effective in highlighting the overall pattern in the data. However, the line graph may not be the best choice if the focus is on the exact values or the differences between individual years.
+
+    Other ways to visualize this data could include a stacked bar graph or a stacked area graph, which would show the breakdown of meals served by year and highlight the relative contributions of each year. A scatter plot could also be used to show the relationship between the campaign year and the number of meals served, although it may not be as effective at highlighting the trends over time.
+
+    In conclusion, the choice of visualization should be based on the goals of the analysis and the audience for the visualization. That aside, the best visualization for me is the line chart because it highlights the trends of meals served over time.
+
+## End of the Assignment

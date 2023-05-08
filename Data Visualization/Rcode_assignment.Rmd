@@ -1,0 +1,261 @@
+---
+title: ' Assignment R code part'
+author: "Toni Afani"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+  word_document: default
+Due date: 
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+Use RStudio for this assignment. 
+Edit the file `assignment_01.Rmd` and insert your R code where wherever you see the string "INSERT YOUR ANSWER HERE"
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. 
+
+## Sample Question and Solution
+
+Use `seq()` to create the vector $(1,2,3,\ldots,10)$.
+
+```{r}
+seq(1,10)
+```
+
+## Question 1
+
+a) Use the `seq()` function to create the vector $(5, 9, 13, \ldots, 41)$. Note that each term in this sequence is of the form 
+$1 + 4n$ where $n = 1, \ldots, 10$.
+```{r}
+#Create a sequence of numbers from 5 to 41 in steps of 4 using the `seq()` function
+my_seq <- seq(5, 41, 4)
+
+# Print the resulting sequence to the console
+print(my_seq)
+```
+
+b) Use `seq()` and `c()` to create the vector $(2, 3, 4, \ldots, 10, 9, 8, \ldots, 2)$.
+```{r}
+# create two sequences with an increment of 1
+seq1 <- seq(2, 10, 1)
+seq2 <- seq(9, 2, -1)
+vec <- c(seq1, seq2) # combines two sequences of numbers in descending order.
+vec # prints the resulting vector
+```
+
+
+c) Use `rep()` to create the vector $(1,2,3,\dots,1,2,3)$ in which the sequence $(1,2,3)$ is repeated 5 times.
+```{r}
+# Use rep() to repeat the sequence (1, 2, 3) five times
+my_vec <- rep(1:3, times = 5)
+print(my_vec)
+```
+
+
+d) Use `rep()` to create the vector $(1,1,\ldots,1,2,2,\ldots,2,3,3,\ldots,3)$ where each number is repeated 7 times.
+```{r}
+#Changes "each" to "times" as the argument name to indicate that we want each element of 1:3 to be repeated "times" number of times.
+vec <- rep(1:3, times = 7)
+vec
+```
+
+e) Use `rep()` to create the vector $(10,20,20,30,30,30,\ldots,100,\ldots,100)$ where $10n$ is repeated $n$ times.
+```{r}
+# Create a sequence from 10 to 100 in increments of 10
+seq <- seq(10, 100, 10)
+
+# Repeat each element according to its value divided by 10
+vec <- rep(seq, times = seq/10)
+vec
+```
+
+## Question 2
+
+a) Compute: $$\sum_{n=1}^{100} n$$.
+```{r}
+# Using formula:
+sum <- (100 * (100 + 1)) / 2
+cat("The sum is:", sum)
+```
+
+
+b) Compute: $$\sum_{n=1}^{100} n^2$$
+```{r}
+total <- 0  # initialize total variable to zero
+for (n in 1:100) {
+  total <- total + n^2  # add the square of each number to the total
+}
+cat("The total is:", total)  # print the final total
+```
+
+
+c) Compute: $$\sum_{n=10}^{20} \left(\frac{2^{n}}{n} + \frac{3^{n}}{n^{3}}\right)$$
+```{r}
+# initialize a variable to store the summation
+sum = 0
+
+# loop through the range of values for n and add each term to the sum
+for (n in 10:20) {
+  sum = sum + ((2^n)/n) + ((3^n)/(n^3))
+}
+
+# print the final value of the sum
+cat("The sum is:", sum)
+```
+
+
+d) Compute: $$\sum_{n=0}^{10} \frac{1}{n!}$$ 
+Hint: Use `factorial(n)` to compute $n!$
+```{r}
+# Define a variable to hold the sum
+sum <- 0
+
+# Loop through n from 0 to 10
+for (n in 0:10) {
+  # Add 1/n! to the sum
+  sum <- sum + 1/factorial(n)
+}
+
+# Print the result
+cat("The sum is:", sum)
+```
+
+
+e) Compute: $$\sum_{n=1}^{20} \left(2n + \frac{1}{n^2}\right)$$
+```{r}
+# initialize sum to 0
+sum <- 0
+
+# iterate over n from 1 to 20
+for (n in 1:20) {
+  # add 2n + 1/n^2 to the sum
+  sum <- sum + 2*n + 1/n^2
+}
+
+# print the final sum
+cat("The sum is", sum)
+```
+
+
+## Question 3
+
+a) Create an empty list `mylist`.
+```{r}
+mylist <- list()
+```
+
+
+b) Add a component named `aa` whose value is 42.
+```{r}
+mylist <- list() # create an empty list
+mylist$aa <- 42 # add component aa with value 42
+```
+
+
+c) Add a component named `bb` whose value is the numeric vector $(1,2,\ldots,10)$.
+```{r}
+bb <- 1:10 # create a numeric vector from 1 to 10
+```
+
+d) Add a component named `cc` whose value is the character vector ("Hello", "CIND 123").
+```{r}
+# Add a component named `cc` whose value is the character vector ("Hello", "CIND 123")
+mylist$cc <- c("Hello", "CIND 123")
+```
+
+
+e) Add a component named `dd` whose value is a 4x3 matrix whose elements are $(1,2,\ldots,12)$ in column-major order.
+```{r}
+# Create a 4x3 matrix with values from 1 to 12 in column-major order
+dd <- matrix(1:12, nrow = 4, ncol = 3, byrow = FALSE)
+
+# Add the matrix to your workspace with the name "dd"
+mylist$dd <- dd
+```
+
+
+f) Display `mylist` on the screen.
+```{r}
+print(mylist)
+```
+
+
+## Question 4
+
+If you have not already done so, install the ISwR package on
+your computer using the command `install.packages("ISwR")`.
+
+Loading the `ISwR` package into the current session.
+```{r}
+ library(ISwR)
+```
+
+a) Display the head of the `thuesen` data frame.
+```{r}
+head(thuesen)
+```
+
+
+b) Compute the mean of each variable using `sapply()`, removing `NA` values.
+```{r}
+# Compute the mean of each variable using sapply(), removing NA values.
+sapply(thuesen, mean, na.rm = TRUE)
+```
+
+
+c) Create a numeric vectors `n1`, `n2`, and `n3` whose elements are the integers from 1 to 20, their squares, and their cubes.
+```{r}
+n1 <- 1:20            # Create a vector of integers from 1 to 20
+n2 <- n1^2            # Square each element of n1 using the ^ operator
+n3 <- n1^3            # Cube each element of n1 using the ^ operator
+```
+
+
+d) Create a new data frame `nn` from the above three vectors.
+```{r}
+# Combine the three vectors into a data frame named `nn`
+nn <- data.frame(n1, n2, n3)
+```
+
+
+e) Display the tail of `nn`.
+```{r}
+tail(nn)
+```
+
+
+f) Compute the sum of each variable in `nn` using `sapply`.
+```{r}
+# use sapply() to compute column sums
+col_sum <- sapply(nn, sum, na.rm=TRUE)
+
+# display the resulting vector
+col_sum
+```
+
+## Question 5
+
+a) Create a 4x4 empty matrix, i.e. all elements equal to NA, display mat1. 
+
+```{r}
+# create a 4x4 empty matrix filled with NA values
+mat1 <- matrix(NA, nrow=4, ncol=4)
+
+# display the matrix
+mat1
+```
+
+
+b) fill the middle 4 elements with the values 'This' 'is' 'the' 'middle' and display mat1.
+```{r}
+# Fill the middle 4 elements with the values 'This' 'is' 'the' 'middle'.
+mat1[2:3, 2:3] <- c("This", "is", "the", "middle")
+
+# Display mat1
+mat1
+```
+
+
+END of Assignment R code part.
